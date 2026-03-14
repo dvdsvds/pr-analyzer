@@ -63,6 +63,7 @@ gh = Github(os.getenv("GITHUB_TOKEN"))
 class PRRequest(BaseModel):
     repo: str
     pr_number: int
+    token: str | None = None
 
 @app.get("/")
 def root():
@@ -71,6 +72,7 @@ def root():
 @app.post("/analyze")
 def analyze_pr(req: PRRequest):
     try:
+        client = Github(req.token) if req.token else gh
         repo = gh.get_repo(req.repo)
         pr = repo.get_pull(req.pr_number)
         files = pr.get_files()
@@ -134,7 +136,36 @@ def analyze_pr(req: PRRequest):
             "total_deletions": sum(f["deletions"] for f in changed_files),
             "review_points": review_points,
             "summary": summary,
+            "added_files": added_files,
+            "removed_files": removed_files,
+            "modified_files": modified_files,
         }
 
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+class RepoListRequest(BaseModel):
+    token: str
+    include_private: bool = False
+
+@app.post("/repos")
+def get_repos(req: RepoListRequest):
+    try:
+        client = Github(req.token)
+        user = client.get_user()
+        repos = user.get_repos(sort="updated")
+        
+        result = []
+        for repo in repos:
+            if repo.private and not req.include_private:
+                continue
+            result.append({
+                "name": repo.full_name,
+                "private": repo.private,
+                "description": repo.description or "",
+                "updated_at": repo.updated_at.strftime("%Y-%m-%d"),
+            })
+        
+        return {"repos": result}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
