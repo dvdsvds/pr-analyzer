@@ -62,7 +62,7 @@ export default function Home() {
     const fetchRepos = async () => {
       setLoadingRepos(true);
       try {
-        const res = await fetch("http://localhost:8000/repos", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/repos`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ token: session.accessToken, include_private: includePrivate }),
@@ -81,7 +81,7 @@ export default function Home() {
     setError("");
     setResult(null);
     try {
-      const res = await fetch("http://localhost:8000/analyze", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repo, pr_number: parseInt(prNumber), token: session?.accessToken }),
@@ -247,8 +247,10 @@ export default function Home() {
                   </ul>
                 </li>
               )}
-              {!result.summary.includes("테스트") ? null : (
-                <li className="text-sm text-white/70 flex gap-2"><span className="text-purple-400">·</span>테스트 파일 변경이 없어 주의가 필요해요</li>
+              {result.summary.includes("테스트") && (
+                <li className="text-sm text-white/70 flex gap-2">
+                  <span className="text-purple-400">·</span>테스트 파일 변경이 없어 주의가 필요해요
+                </li>
               )}
             </ul>
           </div>
