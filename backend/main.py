@@ -10,7 +10,10 @@ load_dotenv()
 app = FastAPI(title="PR Analyzer API")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://pr-analyzer-sandy.vercel.app",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
