@@ -18,6 +18,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+LANG_MAP = {
+    "py": "Python", "js": "JavaScript", "ts": "TypeScript",
+    "tsx": "TypeScript", "jsx": "JavaScript", "java": "Java",
+    "cpp": "C++", "c": "C", "h": "C/C++", "cs": "C#",
+    "go": "Go", "rs": "Rust", "rb": "Ruby", "php": "PHP",
+    "swift": "Swift", "kt": "Kotlin", "html": "HTML",
+    "css": "CSS", "scss": "SCSS", "json": "JSON",
+    "md": "Markdown", "yml": "YAML", "yaml": "YAML",
+}
+
+
+def get_lang_stats(changed_files):
+    stats = {}
+    for f in changed_files:
+        ext = f["filename"].rsplit(".", 1)[-1].lower() if "." in f["filename"] else "other"
+        lang = LANG_MAP.get(ext, ext)
+        if lang not in stats:
+            stats[lang] = {"additions": 0, "deletions": 0, "files": 0}
+        stats[lang]["additions"] += f["additions"]
+        stats[lang]["deletions"] += f["deletions"]
+        stats[lang]["files"] += 1
+    return sorted(
+        [{"lang": k, **v} for k, v in stats.items()],
+        key=lambda x: x["additions"] + x["deletions"],
+        reverse=True
+    )
+    
 def parse_diff(diff: str, filename: str):
     if not diff:
         return []
@@ -89,6 +116,7 @@ def analyze_pr(req: PRRequest):
                 "deletions": f.deletions,
                 "diff": f.patch if f.patch else "",
                 "hunks": parse_diff(f.patch, f.filename) if f.patch else [],
+                "lang_stats": get_lang_stats(changed_files),
             })
 
         review_points = []

@@ -31,6 +31,7 @@ interface PRResult {
   added_files: string[]
   removed_files: string[]
   modified_files: string[]
+  lang_stats: { lang: string; additions: number; deletions: number; files: number }[]
 }
 
 const glass = "backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl";
@@ -254,6 +255,38 @@ export default function Home() {
               )}
             </ul>
           </div>
+
+          {/* 언어별 통계 */}
+          {result.lang_stats.length > 0 && (
+            <div className={`${glass} p-5`}>
+              <p className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">언어별 통계</p>
+              <div className="space-y-3">
+                {result.lang_stats.map((s, i) => {
+                  const total = result.total_additions + result.total_deletions;
+                  const pct = total > 0 ? Math.round(((s.additions + s.deletions) / total) * 100) : 0;
+                  return (
+                    <div key={i}>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm text-white/70">{s.lang}</span>
+                        <div className="flex gap-3 text-xs font-mono">
+                          <span className="text-green-400">+{s.additions}</span>
+                          <span className="text-orange-400">-{s.deletions}</span>
+                          <span className="text-white/30">{s.files}개 파일</span>
+                          <span className="text-white/20">{pct}%</span>
+                        </div>
+                      </div>
+                      <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-purple-500 rounded-full"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* 리뷰 포인트 */}
           {result.review_points.length > 0 && (
