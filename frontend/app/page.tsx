@@ -34,7 +34,7 @@ interface PRResult {
   lang_stats: { lang: string; additions: number; deletions: number; files: number }[]
 }
 
-const glass = "backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl";
+const glass = "backdrop-blur-md bg-white/[0.02] border border-white/10 rounded-2xl";
 
 export default function Home() {
   const [repo, setRepo] = useState("");
@@ -132,7 +132,7 @@ export default function Home() {
       </div>
 
       {/* 검색창 */}
-      <div className="p-4 mb-4 flex gap-3 rounded-2xl border border-white/10" style={{background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(12px)'}}>
+      <div className={`${glass} p-4 mb-4 flex gap-3`}>
         <input
           className="flex-1 bg-transparent outline-none text-sm placeholder-white/30"
           placeholder="owner/repo (예: facebook/react)"
