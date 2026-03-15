@@ -132,7 +132,7 @@ export default function Home() {
       </div>
 
       {/* 검색창 */}
-      <div className={`${glass} p-4 mb-4 flex gap-3`}>
+      <div className="p-4 mb-4 flex gap-3 rounded-2xl border border-white/10" style={{background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(12px)'}}>
         <input
           className="flex-1 bg-transparent outline-none text-sm placeholder-white/30"
           placeholder="owner/repo (예: facebook/react)"
