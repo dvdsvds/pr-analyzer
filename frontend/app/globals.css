@@ -2,7 +2,8 @@
 
 html, body {
   min-height: 100vh;
-  background: #12073B;
+  /* background: #12073B; */
+  background: #1A065F;
   color: #e2e8f0;
   font-family: Arial, Helvetica, sans-serif;
 }
